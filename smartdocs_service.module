@@ -1,0 +1,250 @@
+<?php
+/**
+ * @file
+ * Code for the Smartdocs Service feature.
+ */
+
+include_once 'smartdocs_service.features.inc';
+
+/**
+ * Implements hook_services_resources
+ *
+ * Expose the SmartDocs CRUD operations and Also allow Import and Rendering of SmartDocs Nodes
+ * @return array
+ */
+function smartdocs_service_services_resources() {
+  return array(
+    'smartdocs' => array(
+      'operations' => array(
+        'retrieve' => array(
+          'help' => 'Retrieve a smartdocs Model',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_model_resource_retrieve',
+          'args' => array(
+            array(
+              'name' => 'model',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'string',
+              'description' => 'The name of the SmartDocs Model to retrieve',
+            ),
+          ),
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+        ),
+        'create' => array(
+          'help' => 'Create a SmartDocs Model',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_model_resource_create',
+          'args' => array(
+            array(
+              'name' => 'name',
+              'type' => 'string',
+              'description' => 'Model name',
+              'source' => array('data' => 'name'),
+              'optional' => FALSE,
+              'default' => '<page>'
+            ),
+            array(
+              'name' => 'display_name',
+              'type' => 'string',
+              'description' => 'Model Display name',
+              'source' => array('data' => 'display_name'),
+              'optional' => TRUE,
+              'default' => '<page>'
+            ),
+            array(
+              'name' => 'description',
+              'type' => 'string',
+              'description' => 'Model description',
+              'source' => array('data' => 'description'),
+              'optional' => TRUE,
+              'default' => '<page>'
+            ),
+          ),
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+        ),
+        'update' => array(
+          'help' => 'Update SmartDocs Model Description',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_model_resource_update',
+          'args' => array(
+            array(
+              'name' => 'model_name',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'string',
+              'description' => 'The name of the model to update',
+            ),
+            array(
+              'name' => 'display_name',
+              'type' => 'string',
+              'description' => 'Model Display name',
+              'source' => array('data' => 'display_name'),
+              'optional' => TRUE,
+              'default' => '<page>'
+            ),
+            array(
+              'name' => 'description',
+              'type' => 'string',
+              'description' => 'Model description',
+              'source' => array('data' => 'description'),
+              'optional' => TRUE,
+              'default' => '<page>'
+            ),
+          ),
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+        ),
+        'delete' => array(
+          'help' => t('Delete a model'),
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_model_resource_delete',
+          'args' => array(
+            array(
+              'name' => 'model',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'string',
+              'description' => 'The name of the model to delete',
+            ),
+          ),
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+        ),
+        'index' => array(
+          'help' => 'List all nodes',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_model_resource_index',
+          'args' => array(),
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+        ),
+      ),
+      'actions' => array(
+        'queue_status' => array(
+          'help' => 'Status of the SmartDocs Queue',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_service_queue_status',
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+          'access arguments append' => FALSE,
+          'args' => array(),
+        ),
+      ),
+      'targeted_actions' => array(
+        'render' => array(
+          'help' => 'Render SmartDocs page',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_service_swagger_render',
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+          'access arguments append' => FALSE,
+          'args' => array(
+            array(
+              'name' => 'model',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'string',
+              'description' => 'The name of the model on which the swagger file should be imported',
+            ),
+          ),
+        ),
+        'import' => array(
+          'help' => 'Import Swagger file. POST multipart/form-data',
+          'file' => array(
+            'type' => 'inc',
+            'module' => 'smartdocs_service',
+            'name' => 'smartdocs_service',
+          ),
+          'callback' => '_smartdocs_service_swagger_import',
+          'access callback' => 'user_access',
+          'access arguments' => array('access smartdocs operations using apis'),
+          'args' => array(
+            array(
+              'name' => 'model',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'string',
+              'description' => 'The name of the model on which the swagger file should be imported',
+            ),
+            array(
+              'name' => 'api_definition',
+              'optional' => TRUE,
+              'source' => 'data',
+              'description' => 'The file parameters',
+              'type' => 'array',
+            ),
+          ),
+        ),
+      ),
+    )
+  );
+
+}
+
+/**
+ * Implemenents hook_permission
+ * @return array
+ */
+function smartdocs_service_permission() {
+  return array(
+    'access smartdocs operations using apis' => array(
+      'title' => t('SmartDocs Operations using Services module')
+    ),
+  );
+}
+
+/**
+ * Implements hook_cron_queue_info()
+ *
+ * Queue for processing the SmartDocs Nodes rendering
+ */
+function smartdocs_service_cron_queue_info() {
+  $queues['smartdocs_service_queue'] = array(
+    'worker callback' => 'smartdocs_service_queue_process',
+    'time' => 60,
+  );
+  return $queues;
+}
+
+/**
+ * Worker callback for the smartdocs_service_queue queue.
+ * @param $item
+ */
+function smartdocs_service_queue_process($item){
+  $context = array();
+  require_once drupal_get_path('module', 'smartdocs') . '/batch/smartdocs.render.inc';
+  require_once DRUPAL_ROOT . "/includes/batch.inc";
+  $item[1][] = &$context; //Empty context object added
+  call_user_func_array($item[0], $item[1]);
+}
