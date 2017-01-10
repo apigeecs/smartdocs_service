@@ -1,6 +1,6 @@
 This module adds the abliity to manage SmartDocs using APIs. 
 
-**It is provided as an example only for the community, and it is supported with best-effort via GitHub issues or community.apigee.com.**
+**This is an open-source project from Apigee. It is not covered by Apigee support contracts. However, we will support you as best we can. For help, please open an issue in this GitHub project or on community.apigee.com. You are also always welcome to submit a pull request.**
 
 The module exposes a new role "smartdocs service role," which has the ability to call these portal-APIs. Those portal-APIs depend on management APIs that are not yet published as they are not considered stable enough due to planned changes to document/support externally at this time.
 
