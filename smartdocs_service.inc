@@ -44,7 +44,7 @@ function _smartdocs_service_swagger_render( $name ) {
       $selected[$method->getUuid()] = $method->getUuid();
     }
   }
-  $batch = smartdocs_render($model, $revision, $selected, array('publish' => TRUE));
+  $batch = smartdocs_render($model, $revision, $selected, array('publish' => TRUE), FALSE);
   $queue = DrupalQueue::get('smartdocs_service_queue');
   foreach($batch['operations'] as $op){
     $queue->createItem($op);
