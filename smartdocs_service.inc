@@ -73,6 +73,10 @@ function _smartdocs_model_resource_retrieve($model_name) {
  * @return string
  */
 function _smartdocs_model_resource_create($model_name, $display_name,  $model_description){
+  if(smartdocs_model_exist($model_name)){
+    return services_error(t('Model with the same name exists'), 500);
+  }
+
   if (empty($display_name)) {
     $display_name = $model_name;
   }
