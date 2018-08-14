@@ -14,15 +14,16 @@ require_once drupal_get_path('module', 'smartdocs') . "/batch/smartdocs.render.i
  * @return mixed|string
  */
 function _smartdocs_service_swagger_import( $model_name, $fields ) {
-  $formats =  array('yaml' => 'swagger', 'json' => 'swagger', 'xml' =>'wadl');
+  $formats =  array('yml' => 'swagger', 'yaml' => 'swagger', 'json' => 'swagger', 'xml' =>'wadl');
   $tmp = explode(".", $_FILES['api_definition']['name']);
   $ext = array_pop($tmp);
+  $mimetype = file_get_mimetype($_FILES['api_definition']['name'] );
   if(!isset($formats[$ext])) {
     return services_error(t('unknown format'), 500);
   }
   $model = new Model(devconnect_default_org_config());
   $model->load($model_name);
-  $model->importFile(file_get_contents($_FILES['api_definition']['tmp_name']), $formats[$ext], "application/" . $ext);
+  $model->importFile(file_get_contents($_FILES['api_definition']['tmp_name']), $formats[$ext], $mimetype);
   return "Import Successful";
 }
 

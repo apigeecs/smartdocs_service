@@ -248,3 +248,29 @@ function smartdocs_service_queue_process($item){
   $item[1][] = &$context; //Empty context object added
   call_user_func_array($item[0], $item[1]);
 }
+
+/**
+ * Implements hook_file_mimetype_mapping_alter().
+ */
+function smartdocs_service_file_mimetype_mapping_alter(&$mapping) {
+
+  // add new mappings here
+  $new_mappings = array(
+    'json'    => 'application/json',
+    'yaml'    => 'application/yaml',
+    'yml'    => 'application/yaml',
+  );
+
+  // loop new mime types and add
+  foreach ($new_mappings as $extension => $mime) {
+
+    // add mime type
+    if (!in_array($mime, $mapping['mimetypes'])) {
+      $mapping['mimetypes'][] = $mime;
+    }
+
+    // add extension
+    $index = array_search($mime, $mapping['mimetypes']);
+    $mapping['extensions'][$extension] = $index;
+  }
+}
