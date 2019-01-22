@@ -22,7 +22,9 @@ function _smartdocs_service_swagger_import( $model_name, $fields ) {
   }
   $model = new Model(devconnect_default_org_config());
   $model->load($model_name);
-  $model->importFile(file_get_contents($_FILES['api_definition']['tmp_name']), $formats[$ext], "application/" . $ext);
+  $file_contents = file_get_contents($_FILES['api_definition']['tmp_name']);
+  $model->importFile($file_contents , $formats[$ext], "application/" . $ext);
+  module_invoke_all('smartdocs_service_model_import', $model_name, $file_contents, $model, $fields);
   return "Import Successful";
 }
 
