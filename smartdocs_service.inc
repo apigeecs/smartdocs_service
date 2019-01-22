@@ -26,6 +26,7 @@ function _smartdocs_service_swagger_import( $model_name, $fields ) {
   if (!isset($formats[$ext])) {
     return services_error(t('unknown format'), 500);
   }
+
   // Create form_state for smartdocs_import_model_submit function.
   $form_state = array();
 
