@@ -14,16 +14,36 @@ require_once drupal_get_path('module', 'smartdocs') . "/batch/smartdocs.render.i
  * @return mixed|string
  */
 function _smartdocs_service_swagger_import( $model_name, $fields ) {
-  $formats =  array('yml' => 'swagger', 'yaml' => 'swagger', 'json' => 'swagger', 'xml' =>'wadl');
+  // Manipulate $_FILES to match form version.
+  $_FILES['files'] = $_FILES['api_definition'];
+  foreach ($_FILES['files'] as $key => $item) {
+    $_FILES['files'][$key] = array('file' => $_FILES['api_definition'][$key]);
+  }
+  // Acceptable formats.
+  $formats = array('yml' => 'swagger', 'yaml' => 'swagger', 'json' => 'swagger', 'xml' => 'wadl');
   $tmp = explode(".", $_FILES['api_definition']['name']);
   $ext = array_pop($tmp);
-  $mimetype = file_get_mimetype($_FILES['api_definition']['name'] );
-  if(!isset($formats[$ext])) {
+  if (!isset($formats[$ext])) {
     return services_error(t('unknown format'), 500);
   }
-  $model = new Model(devconnect_default_org_config());
-  $model->load($model_name);
-  $model->importFile(file_get_contents($_FILES['api_definition']['tmp_name']), $formats[$ext], $mimetype);
+
+  // Create form_state for smartdocs_import_model_submit function.
+  $form_state = array();
+
+  // Pass in file type.
+  $form_state['values']['type'] = $ext;
+
+  // Pass in model name
+  $form_state['values']['model_uuid'] = $model_name;
+  //Pass in upload type
+  $form_state['values']['upload_type'] = 'file';
+
+  // Pass in file, not sure if this is neccessary.
+  $form_state['values']['file'] = file_get_contents($_FILES['api_definition']['tmp_name']);
+
+  // Call smartdoc_import function. This will now trigger smartdoc_import hooks.
+  smartdocs_import_model_submit(array(), $form_state);
+
   return "Import Successful";
 }
 
