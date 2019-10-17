@@ -31,7 +31,7 @@ function _smartdocs_service_swagger_import( $model_name, $fields ) {
   $form_state = array();
 
   // Pass in file type.
-  $form_state['values']['type'] = $ext;
+  $form_state['values']['type'] = 'swagger_' . $ext;
 
   // Pass in model name
   $form_state['values']['model_uuid'] = $model_name;
